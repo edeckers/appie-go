@@ -60,6 +60,10 @@ type Product struct {
 	IsAvailable bool `json:"isAvailable"`
 	// IsOrderable indicates if the product can currently be ordered.
 	IsOrderable bool `json:"isOrderable"`
+	// AvailabilityLabel is AH's reason when the product cannot be ordered
+	// online (e.g., "Tijdelijk uitverkocht", "Uit het assortiment", "Alleen
+	// in de winkel"). Empty when it can be ordered.
+	AvailabilityLabel string `json:"availabilityLabel,omitempty"`
 	// IsPreviouslyBought indicates if the user has bought this before.
 	IsPreviouslyBought bool `json:"isPreviouslyBought"`
 	// UnitSize is the package size (e.g., "500 g", "1 L").

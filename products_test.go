@@ -202,3 +202,24 @@ func TestGetProductNotFound(t *testing.T) {
 		t.Error("expected an error for a missing product")
 	}
 }
+
+func TestGetProductNotOrderable(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"data":{"product":{
+			"id":585628,"title":"De Kleine Keuken Knijpmix peer venkel & haver 12m+","salesUnitSize":"100 g",
+			"priceV2":{"now":{"amount":1.49},"was":{"amount":1.49}},
+			"availability":{"online":{"status":"AVAILABLE"},"isOrderable":false,"availabilityLabel":"Tijdelijk uitverkocht"}}}}`)
+	}))
+	defer server.Close()
+
+	product, err := New(WithBaseURL(server.URL)).GetProduct(context.Background(), 585628)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if product.IsOrderable {
+		t.Error("expected a sold-out product not to be orderable")
+	}
+	if product.AvailabilityLabel != "Tijdelijk uitverkocht" {
+		t.Errorf("expected label 'Tijdelijk uitverkocht', got %q", product.AvailabilityLabel)
+	}
+}
