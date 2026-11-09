@@ -93,6 +93,7 @@ const fetchProductDetailsQuery = `query FetchProductDetails($productId: Int!) {
     availability {
       online { status }
       isOrderable
+      availabilityLabel
     }
     imagePack {
       large { url width height }
@@ -138,7 +139,8 @@ type productDetailsResponse struct {
 			Online struct {
 				Status string `json:"status"`
 			} `json:"online"`
-			IsOrderable bool `json:"isOrderable"`
+			IsOrderable       bool   `json:"isOrderable"`
+			AvailabilityLabel string `json:"availabilityLabel"`
 		} `json:"availability"`
 		ImagePack []struct {
 			Large  *productImageRendition `json:"large"`
@@ -165,6 +167,7 @@ func (r *productDetailsResponse) toProduct() Product {
 		UnitSize:         p.SalesUnitSize,
 		PropertyIcons:    p.Icons,
 	}
+	product.AvailabilityLabel = p.Availability.AvailabilityLabel
 	if p.PriceV2.Discount != nil {
 		product.IsBonus = true
 		product.BonusMechanism = p.PriceV2.Discount.Description
